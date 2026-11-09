@@ -1,0 +1,2 @@
+ALTER TABLE public.review_requests ADD COLUMN IF NOT EXISTS reminded_at timestamptz;
+CREATE INDEX IF NOT EXISTS review_requests_reminder_idx ON public.review_requests (created_at) WHERE reminded_at IS NULL AND rating IS NULL;

@@ -1,0 +1,2 @@
+ALTER TABLE public.review_requests ADD COLUMN IF NOT EXISTS customer_email text, ADD COLUMN IF NOT EXISTS channel text NOT NULL DEFAULT 'sms', ADD COLUMN IF NOT EXISTS email_id text;
+ALTER TABLE public.businesses ADD COLUMN IF NOT EXISTS last_reminder_at timestamptz;
