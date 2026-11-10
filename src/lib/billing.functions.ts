@@ -29,7 +29,7 @@ export const createCheckout = createServerFn({ method: "POST" })
       customer, client_reference_id: b.id,
       success_url: `${data.origin}/abonnement?checkout=success`,
       cancel_url: `${data.origin}/abonnement?checkout=cancel`,
-      automatic_tax: { enabled: true }, customer_update: { address: "auto", name: "auto" },
+      automatic_tax: { enabled: true }, allow_promotion_codes: true, customer_update: { address: "auto", name: "auto" },
     };
 
     if (data.kind === "credits") {

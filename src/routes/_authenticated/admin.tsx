@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PromoTab } from "@/components/rateq/promo-codes";
 import { StatusBadge } from "@/components/rateq/status-badge";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -40,12 +41,14 @@ function Admin() {
             <TabsTrigger value="users">{t("adm_users")}</TabsTrigger>
             <TabsTrigger value="activity">{t("adm_activity")}</TabsTrigger>
             <TabsTrigger value="contact">{t("adm_contact")}</TabsTrigger>
+            <TabsTrigger value="promo">{t("adm_promo")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview"><OverviewTab d={data} /></TabsContent>
           <TabsContent value="businesses"><BusinessesTab d={data} /></TabsContent>
           <TabsContent value="users"><UsersTab d={data} me={ws.user.id} /></TabsContent>
           <TabsContent value="activity"><ActivityTab d={data} /></TabsContent>
           <TabsContent value="contact"><ContactTab /></TabsContent>
+          <TabsContent value="promo"><PromoTab /></TabsContent>
         </Tabs>
       )}
     </div>
