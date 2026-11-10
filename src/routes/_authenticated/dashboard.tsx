@@ -5,6 +5,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 import { Send, TrendingUp, Star, ShieldAlert } from "lucide-react";
 import { useWorkspace, requestsQuery } from "@/lib/workspace";
 import { useI18n } from "@/lib/i18n";
+import { TrialBanner } from "@/components/rateq/trial-banner";
 import { OnboardingChecklist } from "@/components/rateq/onboarding";
 import { SendRequestButton } from "@/components/rateq/send-request";
 import { StatusBadge } from "@/components/rateq/status-badge";
@@ -49,6 +50,11 @@ function Dashboard() {
 
   if (!biz) return <p className="text-muted-foreground">{t("loading")}</p>;
 
+  const hour = new Date().getHours();
+  const greeting = t(hour < 12 ? "greet_morning" : hour < 18 ? "greet_afternoon" : "greet_evening");
+  const fullName = ws?.profile?.full_name || (ws?.user.user_metadata?.["full_name"] as string | undefined) || "";
+  const firstName = fullName.trim().split(/\s+/)[0] || "";
+
   const kpis = [
     { label: t("kpi_sent"), value: stats.sent, icon: Send },
     { label: t("kpi_conv"), value: `${stats.conv}%`, icon: TrendingUp },
@@ -60,11 +66,14 @@ function Dashboard() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">{t("side_overview")}</h1>
+          <p className="text-sm font-medium text-primary">{t("side_overview")}</p>
+          <h1 className="text-3xl font-bold">{greeting}{firstName ? `, ${firstName}` : ""} 👋</h1>
           <p className="text-sm text-muted-foreground">{t("credits")}: <span className="font-semibold text-foreground">{biz.sms_credits}</span></p>
         </div>
         <SendRequestButton businessId={biz.id} size="lg" />
       </div>
+
+      <TrialBanner business={biz} canUpgrade={isOwner} />
 
       {isOwner && <OnboardingChecklist business={biz} requestCount={reqs.length} />}
 

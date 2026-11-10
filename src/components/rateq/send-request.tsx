@@ -1,5 +1,7 @@
+import { useWorkspace } from "@/lib/workspace";
+import { isTrialExpired } from "@/lib/plans";
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { Send, Copy } from "lucide-react";
@@ -31,8 +33,14 @@ export function ChannelSelect({ value, onChange }: { value: Channel; onChange: (
 export function SendRequestButton({ businessId, size = "default" }: { businessId: string; size?: "default" | "lg" }) {
   const { t } = useI18n();
   const create = useServerFn(createReviewRequest);
+  const { data: ws } = useWorkspace();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const h = () => setOpen(true);
+    window.addEventListener("rateq:open-send", h);
+    return () => window.removeEventListener("rateq:open-send", h);
+  }, []);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -54,18 +62,28 @@ export function SendRequestButton({ businessId, size = "default" }: { businessId
       else if (r.email === "failed") toast.error(t("email_failed"));
       qc.invalidateQueries();
     } catch (err) {
-      toast.error((err as Error).message);
+      const msg = (err as Error).message;
+      toast.error(msg.includes("TRIAL_EXPIRED") ? t("trial_expired") : msg);
     } finally {
       setBusy(false);
     }
   }
+
+  const biz = ws?.business;
+  const expired = !!biz && isTrialExpired(biz.plan, biz.created_at);
 
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) { setLink(null); setStatus(null); setName(""); setPhone(""); setEmail(""); } }}>
       <DialogTrigger asChild><Button size={size} className="shadow-glow"><Send /> {t("send_new")}</Button></DialogTrigger>
       <DialogContent>
         <DialogHeader><DialogTitle>{t("send_title")}</DialogTitle></DialogHeader>
-        {link ? (
+        {expired && !link ? (
+          <div className="space-y-3">
+            <p className="font-semibold">{t("trial_expired")}</p>
+            <p className="text-sm text-muted-foreground">{t("trial_expired_d")}</p>
+            {ws?.role === "owner" && <Button asChild className="w-full"><Link to="/abonnement" onClick={() => setOpen(false)}>{t("trial_choose")}</Link></Button>}
+          </div>
+        ) : link ? (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
               {status?.sms === "sent" || status?.email === "sent" ? t("sms_sent_desc") : status?.sms === "no_credits" ? t("sms_no_credits_desc") : t("sms_failed_desc")}

@@ -37,3 +37,13 @@ describe("customer reminder", () => {
     expect(REMINDER_AFTER_MS).toBe(48 * 60 * 60 * 1000);
   });
 });
+
+import { isTrialExpired, trialDaysLeft, TRIAL_DAYS } from "@/lib/plans";
+describe("demo trial", () => {
+  const start = "2026-11-01T10:00:00Z";
+  it("lasts 14 days", () => expect(TRIAL_DAYS).toBe(14));
+  it("demo is active on day 13", () => expect(isTrialExpired("demo", start, new Date("2026-11-14T10:00:00Z"))).toBe(false));
+  it("demo expires after 14 days", () => expect(isTrialExpired("demo", start, new Date("2026-11-15T10:00:00Z"))).toBe(true));
+  it("paid plans never expire", () => expect(isTrialExpired("starter", start, new Date("2027-06-01T00:00:00Z"))).toBe(false));
+  it("counts days left", () => expect(trialDaysLeft(start, new Date("2026-11-05T10:00:00Z"))).toBe(10));
+});

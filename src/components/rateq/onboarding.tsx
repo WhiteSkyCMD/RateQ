@@ -17,9 +17,9 @@ export function OnboardingChecklist({ business, requestCount }: { business: Rout
     queryFn: async () => (await supabase.from("customers").select("id", { count: "exact", head: true }).eq("business_id", business.id)).count ?? 0,
   });
   const steps = [
-    { done: activePlatforms(business).length > 0, title: t("ob1_t"), desc: t("ob1_d"), to: "/instellingen" as const },
-    { done: requestCount > 0, title: t("ob2_t"), desc: t("ob2_d"), to: "/dashboard" as const },
-    { done: customers > 0, title: t("ob3_t"), desc: t("ob3_d"), to: "/klanten" as const },
+    { done: activePlatforms(business).length > 0, title: t("ob1_t"), desc: t("ob1_d"), to: "/instellingen" as "/instellingen" | "/klanten" | null },
+    { done: requestCount > 0, title: t("ob2_t"), desc: t("ob2_d"), to: null },
+    { done: customers > 0, title: t("ob3_t"), desc: t("ob3_d"), to: "/klanten" as "/instellingen" | "/klanten" | null },
   ];
   const done = steps.filter((s) => s.done).length;
   if (hidden) return null;
@@ -36,15 +36,21 @@ export function OnboardingChecklist({ business, requestCount }: { business: Rout
       <Progress value={(done / 3) * 100} className="mt-4" />
       <div className="mt-5 grid gap-3 md:grid-cols-3">
         {steps.map((s) => (
-          <Link key={s.title} to={s.to} className="flex gap-3 rounded-xl border border-border p-4 hover:border-primary/50">
+          <OnboardingStep key={s.title} to={s.to}>
             {s.done ? <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" /> : <Circle className="h-5 w-5 shrink-0 text-muted-foreground" />}
             <div>
               <p className={s.done ? "font-semibold text-muted-foreground line-through" : "font-semibold"}>{s.title}</p>
               <p className="text-xs text-muted-foreground">{s.desc}</p>
             </div>
-          </Link>
+          </OnboardingStep>
         ))}
       </div>
     </div>
   );
+}
+
+function OnboardingStep({ to, children }: { to: "/instellingen" | "/klanten" | null; children: React.ReactNode }) {
+  const cls = "flex gap-3 rounded-xl border border-border p-4 text-left hover:border-primary/50";
+  if (!to) return <button type="button" onClick={() => window.dispatchEvent(new Event("rateq:open-send"))} className={cls}>{children}</button>;
+  return <Link to={to} className={cls}>{children}</Link>;
 }

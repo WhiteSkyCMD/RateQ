@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet, redirect, Link, useNavigate } from "@tanstack/react-router";
-import { planCredits } from "@/lib/plans";
+import { planCredits, isTrialExpired, trialDaysLeft } from "@/lib/plans";
 import { useQueryClient } from "@tanstack/react-query";
 import { LayoutDashboard, Contact, MessageSquareWarning, Settings, Users, CreditCard, ShieldCheck, LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -50,7 +50,7 @@ function AppShell() {
           <p className="truncate text-sm font-semibold">{ws?.business?.name ?? "…"}</p>
           <p className="text-xs text-muted-foreground">{ws?.isSuperAdmin ? t("role_super_admin") : ws?.role === "owner" ? t("role_owner") : t("role_staff")}</p>
         </div>
-        {ws?.business && <CreditMeter credits={ws.business.sms_credits} plan={ws.business.plan} />}
+        {ws?.business && <CreditMeter credits={ws.business.sms_credits} plan={ws.business.plan} createdAt={ws.business.created_at} />}
         <nav className="mt-6 flex-1 space-y-1">
           {items.map((n) => (
             <Link key={n.to} to={n.to} className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-foreground"
@@ -81,7 +81,7 @@ function AppShell() {
 }
 
 
-function CreditMeter({ credits, plan }: { credits: number; plan: string }) {
+function CreditMeter({ credits, plan, createdAt }: { credits: number; plan: string; createdAt: string }) {
   const { t } = useI18n();
   const total = Math.max(planCredits(plan), credits);
   const used = Math.max(total - credits, 0);
@@ -95,6 +95,11 @@ function CreditMeter({ credits, plan }: { credits: number; plan: string }) {
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
         <div className={pct < 20 ? "h-full rounded-full bg-destructive" : "h-full rounded-full bg-primary"} style={{ width: `${pct}%` }} />
       </div>
+      {plan === "demo" && (
+        <p className={isTrialExpired(plan, createdAt) ? "mt-2 text-xs font-semibold text-destructive" : "mt-2 text-xs text-muted-foreground"}>
+          {isTrialExpired(plan, createdAt) ? t("trial_expired") : t("trial_left").replace("{n}", String(trialDaysLeft(createdAt)))}
+        </p>
+      )}
       <Link to="/abonnement" hash="credits" className="mt-2 block text-xs font-semibold text-primary hover:underline">{t("credit_upgrade")} →</Link>
     </div>
   );

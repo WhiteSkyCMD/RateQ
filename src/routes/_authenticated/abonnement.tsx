@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useWorkspace } from "@/lib/workspace";
 import { useI18n } from "@/lib/i18n";
 import { OwnerOnly } from "@/components/rateq/owner-only";
+import { TrialBanner } from "@/components/rateq/trial-banner";
 import { BuyCredits } from "@/components/rateq/buy-credits";
 import { PricingGrid } from "@/components/rateq/pricing-grid";
 import { setCancellation, createCheckout } from "@/lib/billing.functions";
@@ -78,6 +79,8 @@ function Billing() {
         <h1 className="text-3xl font-bold">{t("bill_title")}</h1>
         <p className="text-sm text-muted-foreground">{t("credits")}: <span className="font-semibold text-foreground">{b.sms_credits}</span> · {t("bill_soon")}</p>
       </div>
+
+      <TrialBanner business={b} canUpgrade={false} />
 
       <section className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">

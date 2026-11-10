@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { isTrialExpired } from "./plans";
 import { activePlatforms, isPublicRating, DEFAULT_SMS_TEMPLATE } from "./routing";
 
 export const createReviewRequest = createServerFn({ method: "POST" })
@@ -19,6 +20,8 @@ export const createReviewRequest = createServerFn({ method: "POST" })
     const { data: role } = await context.supabase.rpc("member_role", { _business_id: data.businessId, _user_id: context.userId });
     if (!role) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: bizPlan } = await supabaseAdmin.from("businesses").select("plan, created_at").eq("id", data.businessId).single();
+    if (bizPlan && isTrialExpired(bizPlan.plan, bizPlan.created_at)) throw new Error("TRIAL_EXPIRED");
     const phone = data.phone ? toE164(data.phone) : "";
     const email = data.email || null;
     const { data: row, error } = await supabaseAdmin

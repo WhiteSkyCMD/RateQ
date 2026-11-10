@@ -86,7 +86,10 @@ function Customers() {
         const ch: Channel = channel !== "sms" && !c.email ? "sms" : channel;
         const r = await send({ data: { businessId: biz.id, name: c.name, phone: c.phone, email: c.email ?? "", channel: ch } });
         if (r.sms === "sent" || r.email === "sent") ok++; else { fail++; if (r.sms === "no_credits") { toast.error(t("sms_no_credits"), { action: { label: t("buy_now"), onClick: () => navigate({ to: "/abonnement", hash: "credits" }) } }); break; } }
-      } catch { fail++; }
+      } catch (err) {
+        fail++;
+        if ((err as Error).message?.includes("TRIAL_EXPIRED")) { toast.error(t("trial_expired"), { action: { label: t("trial_choose"), onClick: () => navigate({ to: "/abonnement" }) } }); break; }
+      }
     }
     setProgress(null); setSel(new Set());
     toast.success(`${t("cu_bulk_done")}: ${ok}${fail ? ` · ${fail} ${t("cu_bulk_failed")}` : ""}`);
