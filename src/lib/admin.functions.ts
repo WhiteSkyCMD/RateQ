@@ -69,13 +69,13 @@ export const adminListPromoCodes = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     await adminClient(context);
     const { stripe } = await import("@/lib/stripe.server");
-    const res = await stripe("promotion_codes", { limit: 100, expand: { 0: "data.coupon" } }, "GET");
+    const res = await stripe("promotion_codes", { limit: 100, expand: { 0: "data.promotion.coupon" } }, "GET");
     return (res.data as any[]).map((p) => ({
       id: p.id as string, code: p.code as string, active: !!p.active,
-      percentOff: (p.coupon?.percent_off ?? null) as number | null,
-      amountOff: (p.coupon?.amount_off ?? null) as number | null,
-      duration: (p.coupon?.duration ?? "once") as string,
-      months: (p.coupon?.duration_in_months ?? null) as number | null,
+      percentOff: ((p.promotion?.coupon ?? p.coupon)?.percent_off ?? null) as number | null,
+      amountOff: ((p.promotion?.coupon ?? p.coupon)?.amount_off ?? null) as number | null,
+      duration: ((p.promotion?.coupon ?? p.coupon)?.duration ?? "once") as string,
+      months: ((p.promotion?.coupon ?? p.coupon)?.duration_in_months ?? null) as number | null,
       timesRedeemed: (p.times_redeemed ?? 0) as number,
       maxRedemptions: (p.max_redemptions ?? null) as number | null,
       expiresAt: (p.expires_at ?? null) as number | null,
@@ -86,7 +86,7 @@ export const adminCreatePromoCode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { code: string; type: "percent" | "amount"; value: number; duration: "once" | "repeating" | "forever"; months?: number | undefined; maxRedemptions?: number | undefined; expiresAt?: string | undefined }) => {
     const code = d.code.trim().toUpperCase();
-    if (!/^[A-Z0-9_-]{3,30}$/.test(code)) throw new Error("Ongeldige code (3–30 tekens, letters/cijfers)");
+    if (!/^[A-Z0-9-]{3,30}$/.test(code)) throw new Error("Ongeldige code (3–30 tekens, letters, cijfers of -)");
     if (!(d.value > 0) || (d.type === "percent" && d.value > 100)) throw new Error("Ongeldige korting");
     if (d.duration === "repeating" && !(d.months && d.months >= 1 && d.months <= 36)) throw new Error("Ongeldig aantal maanden");
     return { ...d, code };
@@ -100,7 +100,7 @@ export const adminCreatePromoCode = createServerFn({ method: "POST" })
       ...(data.type === "percent" ? { percent_off: data.value } : { amount_off: Math.round(data.value * 100), currency: "eur" }),
     });
     await stripe("promotion_codes", {
-      coupon: coupon.id, code: data.code,
+      promotion: { type: "coupon", coupon: coupon.id }, code: data.code,
       max_redemptions: data.maxRedemptions || undefined,
       expires_at: data.expiresAt ? Math.floor(new Date(data.expiresAt + "T23:59:59").getTime() / 1000) : undefined,
     });
