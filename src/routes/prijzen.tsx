@@ -13,8 +13,10 @@ export const Route = createFileRoute("/prijzen")({
       { property: "og:title", content: "Prijzen – RateQ" },
       { property: "og:description", content: "Gratis demo, Starter voor 1 locatie of Business met inbegrepen sms-credits. Maandelijks opzegbaar." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.rateq.nl/prijzen" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.rateq.nl/prijzen" }],
   }),
   component: Pricing,
 });

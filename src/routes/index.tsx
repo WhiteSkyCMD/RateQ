@@ -9,13 +9,16 @@ import { useI18n, type TKey } from "@/lib/i18n";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "RateQ – Meer 5-sterren reviews, automatisch" },
-      { name: "description", content: "Stuur klanten een persoonlijke review-link per sms. Tevreden klanten naar Google, Trustpilot of Facebook, klachten blijven intern." },
-      { property: "og:title", content: "RateQ – Meer 5-sterren reviews, automatisch" },
-      { property: "og:description", content: "Stuur klanten een persoonlijke review-link per sms. Tevreden klanten naar Google, Trustpilot of Facebook, klachten blijven intern." },
+      { title: "RateQ – Automatisch meer Google reviews verzamelen" },
+      { name: "description", content: "Meer Google reviews voor je bedrijf: stuur klanten automatisch een persoonlijke review-link per sms of e-mail. Tevreden klanten naar Google, Trustpilot of Facebook, klachten blijven intern." },
+      { property: "og:title", content: "RateQ – Automatisch meer Google reviews verzamelen" },
+      { property: "og:description", content: "Meer Google reviews voor je bedrijf: stuur klanten automatisch een persoonlijke review-link per sms of e-mail. Tevreden klanten naar Google, Trustpilot of Facebook, klachten blijven intern." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.rateq.nl/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.rateq.nl/" }],
+    scripts: [{"type": "application/ld+json", "children": "{\"@context\": \"https://schema.org\", \"@type\": \"Organization\", \"name\": \"RateQ\", \"legalName\": \"Heijthuijzen Trading & Services B.V.\", \"url\": \"https://www.rateq.nl\", \"logo\": \"https://www.rateq.nl/favicon.png\", \"email\": \"info@rateq.nl\", \"vatID\": \"NL868987098B01\", \"identifier\": \"KvK 99428946\"}"}, {"type": "application/ld+json", "children": "{\"@context\": \"https://schema.org\", \"@type\": \"SoftwareApplication\", \"name\": \"RateQ\", \"applicationCategory\": \"BusinessApplication\", \"operatingSystem\": \"Web\", \"url\": \"https://www.rateq.nl\", \"inLanguage\": \"nl-NL\", \"description\": \"Software om automatisch meer Google reviews te verzamelen via sms en e-mail. Tevreden klanten naar Google, klachten blijven intern.\", \"offers\": [{\"@type\": \"Offer\", \"name\": \"Starter\", \"price\": \"19.95\", \"priceCurrency\": \"EUR\"}, {\"@type\": \"Offer\", \"name\": \"Business\", \"price\": \"69.00\", \"priceCurrency\": \"EUR\"}]}"}],
   }),
   component: Index,
 });

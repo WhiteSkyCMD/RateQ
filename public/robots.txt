@@ -12,3 +12,14 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /r/
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /klanten
+Disallow: /feedback
+Disallow: /instellingen
+Disallow: /team
+Disallow: /abonnement
+Disallow: /api/
+
+Sitemap: https://www.rateq.nl/sitemap.xml

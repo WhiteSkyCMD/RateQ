@@ -19,8 +19,10 @@ export const Route = createFileRoute("/contact")({
       { property: "og:title", content: "Contact – RateQ" },
       { property: "og:description", content: "Vragen over RateQ, een demo of een offerte voor meerdere locaties? Neem contact met ons op." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.rateq.nl/contact" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.rateq.nl/contact" }],
   }),
   component: Contact,
 });

@@ -9,8 +9,10 @@ export const Route = createFileRoute("/verwerkersovereenkomst")({
       { property: "og:title", content: "Verwerkersovereenkomst – RateQ" },
       { property: "og:description", content: "Verwerkersovereenkomst (art. 28 AVG) voor ondernemers die klantgegevens in RateQ verwerken." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.rateq.nl/verwerkersovereenkomst" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://www.rateq.nl/verwerkersovereenkomst" }],
   }),
   component: () => <LegalPage doc="dpa" />,
 });

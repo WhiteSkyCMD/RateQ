@@ -13,6 +13,7 @@ export const Route = createFileRoute("/auth")({
   validateSearch: (s: Record<string, unknown>) => ({ mode: s["mode"] === "signup" ? ("signup" as const) : undefined }),
   head: () => ({
     meta: [
+      { name: "robots", content: "noindex" },
       { title: "Inloggen – RateQ" },
       { name: "description", content: "Log in of maak een RateQ-account aan." },
       { property: "og:title", content: "Inloggen – RateQ" },

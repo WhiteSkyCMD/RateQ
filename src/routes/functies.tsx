@@ -13,8 +13,10 @@ export const Route = createFileRoute("/functies")({
       { property: "og:title", content: "Functies – RateQ" },
       { property: "og:description", content: "Slim sterrenfilter, sms- en e-mailuitnodigingen, klantenimport, feedback-schild, teamrollen en inzichten." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.rateq.nl/functies" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.rateq.nl/functies" }],
   }),
   component: Features,
 });

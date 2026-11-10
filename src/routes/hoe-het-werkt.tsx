@@ -12,8 +12,10 @@ export const Route = createFileRoute("/hoe-het-werkt")({
       { property: "og:title", content: "Hoe het werkt – RateQ" },
       { property: "og:description", content: "In vier stappen van klantbezoek naar een 5-sterren review op Google, zonder publieke klachten." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://www.rateq.nl/hoe-het-werkt" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://www.rateq.nl/hoe-het-werkt" }],
   }),
   component: How,
 });
