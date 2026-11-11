@@ -84,13 +84,12 @@ function AppShell() {
 function CreditMeter({ credits, plan, createdAt }: { credits: number; plan: string; createdAt: string }) {
   const { t } = useI18n();
   const total = Math.max(planCredits(plan), credits);
-  const used = Math.max(total - credits, 0);
   const pct = total ? Math.round((credits / total) * 100) : 0;
   return (
     <div className="mt-3 rounded-xl border border-sidebar-border p-3">
       <div className="flex items-baseline justify-between text-xs">
         <span className="text-muted-foreground">{t("credit_meter")}</span>
-        <span className="font-semibold">{used} / {total} {t("credit_used")}</span>
+        <span className="font-semibold">{credits > planCredits(plan) || plan === "demo" ? credits : `${credits} / ${total}`} {t("credit_available")}</span>
       </div>
       <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
         <div className={pct < 20 ? "h-full rounded-full bg-destructive" : "h-full rounded-full bg-primary"} style={{ width: `${pct}%` }} />
