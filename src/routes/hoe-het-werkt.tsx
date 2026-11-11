@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { UserPlus, MessageSquareText, Star, Route as RouteIcon } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/rateq/site-header";
-import { CtaBand, Eyebrow, Faq, StarSimulator } from "@/components/marketing/sections";
+import { CtaBand, Eyebrow, Faq, StarSimulator, CustomerView } from "@/components/marketing/sections";
 import { useI18n, type TKey } from "@/lib/i18n";
 
 export const Route = createFileRoute("/hoe-het-werkt")({
@@ -54,6 +54,7 @@ function How() {
         </ol>
         <div className="md:sticky md:top-24 md:self-start"><StarSimulator /></div>
       </section>
+      <CustomerView />
       <Faq />
       <CtaBand />
       <SiteFooter />

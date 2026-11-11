@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Star, Scissors, Car, UtensilsCrossed, Stethoscope, Wrench, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteHeader, SiteFooter } from "@/components/rateq/site-header";
-import { StarSimulator, Stats, Roi, Testimonials, Faq, CtaBand, Eyebrow } from "@/components/marketing/sections";
+import { StarSimulator, Stats, Roi, Testimonials, Faq, CustomerView, CtaBand, Eyebrow } from "@/components/marketing/sections";
 import { FEATURES } from "@/components/marketing/features";
 import { useI18n, type TKey } from "@/lib/i18n";
 
@@ -83,6 +83,7 @@ function Index() {
           <div className="mt-8 text-center"><Button asChild variant="outline"><Link to="/hoe-het-werkt">{t("learn_more")} <ArrowRight /></Link></Button></div>
         </div>
       </section>
+      <CustomerView />
 
       <section className="mx-auto max-w-6xl px-4 py-20">
         <h2 className="text-center text-3xl font-bold">{t("ind_t")}</h2>

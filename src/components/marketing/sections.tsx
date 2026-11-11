@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Quote } from "lucide-react";
+import { ArrowRight, Check, Quote, ExternalLink, MessageSquareText } from "lucide-react";
+import icon from "@/assets/rateq-icon.png";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -135,6 +136,70 @@ export function CtaBand() {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Button asChild size="lg" className="shadow-glow"><Link to="/auth" search={{ mode: "signup" }}>{t("hero_cta")} <ArrowRight /></Link></Button>
           <Button asChild size="lg" variant="outline"><Link to="/contact">{t("nav_contact")}</Link></Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function CustomerView() {
+  const { t } = useI18n();
+  const [r, setR] = useState(0);
+  const steps: [TKey, TKey][] = [["cv_s1_t", "cv_s1_d"], ["cv_s2_t", "cv_s2_d"], ["cv_s3_t", "cv_s3_d"], ["cv_s4_t", "cv_s4_d"]];
+  const active = r === 0 ? 1 : isPublicRating(r) ? 2 : 3;
+  return (
+    <section className="mx-auto max-w-6xl px-4 py-20">
+      <div className="text-center">
+        <Eyebrow>{t("cv_eyebrow")}</Eyebrow>
+        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-extrabold md:text-4xl">{t("cv_title")}</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">{t("cv_sub")}</p>
+      </div>
+      <div className="mt-12 grid items-center gap-10 rounded-3xl border border-border bg-card/60 p-6 md:grid-cols-2 md:p-10">
+        <ol className="space-y-3">
+          {steps.map(([k, d], i) => (
+            <li key={k} className={cn("rounded-2xl border p-5 transition-colors", i === active || (i === 0 && r === 0) ? "border-primary/50 bg-primary/10" : "border-border bg-card")}>
+              <p className="font-bold">{t(k)}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t(d)}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="mx-auto w-full max-w-[300px] rounded-[2.5rem] border-4 border-border bg-background p-3 shadow-glow">
+          <div className="mx-auto mb-3 h-1.5 w-16 rounded-full bg-border" />
+          <div className="rounded-2xl bg-card p-3 text-left">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="flex items-center gap-1.5 font-semibold"><MessageSquareText className="h-3.5 w-3.5 text-primary" />{t("cv_sms_from")}</span><span>{t("cv_now")}</span>
+            </div>
+            <p className="mt-1.5 text-xs leading-relaxed">{t("cv_sms")}</p>
+          </div>
+          <div className="mt-3 min-h-[260px] rounded-2xl bg-hero p-5 text-center">
+            <img src={icon} alt="RateQ" className="mx-auto h-9 w-auto" />
+            {r === 0 ? (
+              <>
+                <p className="mt-4 text-xs text-muted-foreground">Sophie, {t("rv_title").toLowerCase()}</p>
+                <p className="text-base font-bold">Bakkerij De Molen?</p>
+                <div className="mt-4 flex justify-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button key={n} aria-label={`${n}`} onClick={() => setR(n)} className="text-3xl text-star transition-transform hover:scale-110">★</button>
+                  ))}
+                </div>
+              </>
+            ) : isPublicRating(r) ? (
+              <>
+                <p className="mt-4 text-star">{"★".repeat(r)}</p>
+                <p className="mt-2 font-bold">{t("rv_thanks")}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{t("rv_redirect")}</p>
+                <span className="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{t("rv_go")} Google <ExternalLink className="h-3.5 w-3.5" /></span>
+              </>
+            ) : (
+              <>
+                <p className="mt-4 text-star">{"★".repeat(r)}<span className="text-muted">{"★".repeat(5 - r)}</span></p>
+                <p className="mt-2 text-sm font-bold">{t("rv_low")}</p>
+                <div className="mt-3 h-16 rounded-lg border border-border bg-background/60 p-2 text-left text-[11px] text-muted-foreground">{t("rv_low_ph")}</div>
+                <span className="mt-3 inline-flex w-full justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">{t("rv_submit")}</span>
+              </>
+            )}
+            {r > 0 && <button onClick={() => setR(0)} className="mt-3 text-xs text-muted-foreground underline">{t("cv_back")}</button>}
+          </div>
         </div>
       </div>
     </section>
