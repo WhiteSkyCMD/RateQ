@@ -125,7 +125,15 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
   useEffect(() => {
+    const toReset = () => {
+      if (window.location.pathname !== "/wachtwoord-herstellen") {
+        window.location.replace("/wachtwoord-herstellen" + window.location.search + window.location.hash);
+      }
+    };
+    // Recovery links can land on any page (e.g. Site URL fallback); send them to the reset form.
+    if (/type=recovery/.test(window.location.hash + window.location.search)) toReset();
     const { data } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") { toReset(); return; }
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
       if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
