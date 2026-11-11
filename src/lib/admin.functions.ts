@@ -13,7 +13,7 @@ export const adminOverview = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const db = await adminClient(context);
     const [b, p, r, m, q] = await Promise.all([
-      db.from("businesses").select("id, name, plan, sms_credits, owner_id, created_at, google_enabled, trustpilot_enabled, facebook_enabled").order("created_at", { ascending: false }),
+      db.from("businesses").select("id, name, plan, sms_credits, owner_id, created_at, google_enabled, trustpilot_enabled, facebook_enabled, google_url, trustpilot_url, facebook_url").order("created_at", { ascending: false }),
       db.from("profiles").select("id, full_name, email, created_at").order("created_at", { ascending: false }),
       db.from("user_roles").select("user_id, role"),
       db.from("business_members").select("id, business_id, user_id, role"),
@@ -49,16 +49,34 @@ export const adminSetMemberRole = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+type BizUpdate = {
+  businessId: string; plan: string; smsCredits: number; name: string;
+  google_url: string; trustpilot_url: string; facebook_url: string;
+  google_enabled: boolean; trustpilot_enabled: boolean; facebook_enabled: boolean;
+};
+const cleanUrl = (u: string) => {
+  const v = (u ?? "").trim();
+  if (!v) return null;
+  if (!/^https?:\/\/\S+$/i.test(v) || v.length > 1000) throw new Error("Ongeldige link: " + v);
+  return v;
+};
+
 export const adminUpdateBusiness = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d: { businessId: string; plan: string; smsCredits: number }) => {
+  .inputValidator((d: BizUpdate) => {
     if (!["demo", "starter", "business"].includes(d.plan)) throw new Error("Invalid plan");
     if (!Number.isInteger(d.smsCredits) || d.smsCredits < 0 || d.smsCredits > 1_000_000) throw new Error("Invalid credits");
-    return d;
+    const name = (d.name ?? "").trim();
+    if (!name || name.length > 120) throw new Error("Ongeldige bedrijfsnaam");
+    return { ...d, name };
   })
   .handler(async ({ data, context }) => {
     const db = await adminClient(context);
-    const { error } = await db.from("businesses").update({ plan: data.plan, sms_credits: data.smsCredits }).eq("id", data.businessId);
+    const { error } = await db.from("businesses").update({
+      plan: data.plan, sms_credits: data.smsCredits, name: data.name,
+      google_url: cleanUrl(data.google_url), trustpilot_url: cleanUrl(data.trustpilot_url), facebook_url: cleanUrl(data.facebook_url),
+      google_enabled: !!data.google_enabled, trustpilot_enabled: !!data.trustpilot_enabled, facebook_enabled: !!data.facebook_enabled,
+    }).eq("id", data.businessId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

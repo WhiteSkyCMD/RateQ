@@ -1,3 +1,4 @@
+import { PLATFORM_LABEL } from "@/lib/routing";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -127,10 +128,16 @@ function EditBusiness({ d, b, onClose }: { d: Overview; b: Overview["businesses"
   const qc = useQueryClient();
   const [plan, setPlan] = useState(b.plan);
   const [credits, setCredits] = useState(String(b.sms_credits));
+  const [f, setF] = useState({
+    name: b.name,
+    google_url: b.google_url ?? "", google_enabled: b.google_enabled,
+    trustpilot_url: b.trustpilot_url ?? "", trustpilot_enabled: b.trustpilot_enabled,
+    facebook_url: b.facebook_url ?? "", facebook_enabled: b.facebook_enabled,
+  });
   const update = useServerFn(adminUpdateBusiness);
   const setRole = useServerFn(adminSetMemberRole);
   const save = useMutation({
-    mutationFn: () => update({ data: { businessId: b.id, plan, smsCredits: Number(credits) } }),
+    mutationFn: () => update({ data: { businessId: b.id, plan, smsCredits: Number(credits), ...f } }),
     onSuccess: () => { toast.success(t("adm_saved")); qc.invalidateQueries({ queryKey: ["admin-overview"] }); onClose(); },
     onError: (e: Error) => toast.error(e.message || t("adm_error_generic")),
   });
@@ -143,8 +150,21 @@ function EditBusiness({ d, b, onClose }: { d: Overview; b: Overview["businesses"
   const members = d.members.filter((m) => m.business_id === b.id);
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader><DialogTitle>{b.name}</DialogTitle></DialogHeader>
+        <div><p className="mb-1 text-xs text-muted-foreground">{t("auth_business")}</p><Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></div>
+        <div className="space-y-2">
+          <p className="text-sm font-semibold">{t("set_platforms")}</p>
+          {(["google", "trustpilot", "facebook"] as const).map((k) => (
+            <div key={k} className="flex flex-col gap-2 rounded-xl border border-border p-3 sm:flex-row sm:items-center">
+              <div className="flex w-32 items-center gap-2">
+                <Switch checked={f[`${k}_enabled`]} onCheckedChange={(v) => setF({ ...f, [`${k}_enabled`]: v })} />
+                <span className="text-sm font-medium">{PLATFORM_LABEL[k]}</span>
+              </div>
+              <Input placeholder={t("url_ph")} value={f[`${k}_url`]} onChange={(e) => setF({ ...f, [`${k}_url`]: e.target.value })} />
+            </div>
+          ))}
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <div><p className="mb-1 text-xs text-muted-foreground">Plan</p>
             <Select value={plan} onValueChange={setPlan}><SelectTrigger><SelectValue /></SelectTrigger>
